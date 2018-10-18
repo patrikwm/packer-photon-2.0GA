@@ -1,3 +1,4 @@
 *.tar.gz
 *.box
 packer_cache
+variables.json

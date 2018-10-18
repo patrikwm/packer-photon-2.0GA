@@ -1,0 +1,97 @@
+{
+  "variables": {
+    "iso_file": "",
+    "iso_sha1sum": "",
+    "product_version": "",
+    "root_password": "2RQrZ83i79N6szpvZNX6"
+  },
+  "builders": [
+    {
+      "name": "vagrant-vmware_desktop",
+      "vm_name": "photon",
+      "vmdk_name": "photon-disk1",
+      "type": "vmware-iso",
+      "headless": false,
+      "disk_size": 20480,
+      "disk_type_id": 0,
+      "guest_os_type": "other3xlinux-64",
+      "iso_url": "{{user `iso_file`}}",
+      "iso_checksum": "{{user `iso_sha1sum`}}",
+      "iso_checksum_type": "sha1",
+      "ssh_username": "root",
+      "ssh_password": "{{user `root_password`}}",
+      "ssh_wait_timeout": "60m",
+      "boot_wait": "5s",
+      "shutdown_command": "shutdown -h now",
+      "http_directory": "scripts",
+      "version": 13,
+      "vmx_data": {
+        "scsi0.virtualDev": "pvscsi",
+        "ethernet0.virtualDev": "vmxnet3"
+        },
+      "vmx_data_post": {
+        "displayname": "VMware Photon",
+        "usb.present": "false"
+        },
+        "boot_command": [
+          "<esc><wait>",
+          "vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json",
+          "<enter>"
+        ]
+    }
+  ],
+    "provisioners": [
+    {
+      "type": "shell",
+      "script": "scripts/photon-package_provisioning.sh"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/photon-vagrant-user_provisioning.sh"
+    },
+    {
+      "type": "shell",
+      "inline": ["sed -i '/linux/ s/$/ net.ifnames=0/' /boot/grub2/grub.cfg"]
+    },
+    {
+      "type": "shell",
+      "inline": ["echo 'GRUB_CMDLINE_LINUX=\"net.ifnames=0\"' >> /etc/default/grub"]
+    },
+    {
+      "type": "shell",
+      "script": "scripts/photon-security_check.sh"
+    },
+    {
+      "type": "shell",
+      "inline": ["sed -i 's/OS/Linux/' /etc/photon-release"]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vsphere",
+        "cluster": "{{user `vsphere_cluster`}}",
+        "host": "{{user `vsphere_server`}}",
+        "datacenter": "{{user `vsphere_datacenter`}}",
+        "username": "{{user `vsphere_user`}}",
+        "password": "{{user `vsphere_password`}}",
+        "datastore": "{{user `vsphere_datastore`}}",
+        "vm_name": "{{user `vm_name`}}",
+        "vm_folder": "{{user `vm_folder`}}",
+        "vm_network": "{{user `vm_network`}}",
+        "disk_mode": "thin",
+        "overwrite": true,
+        "insecure": true
+      },
+      {
+        "type": "vsphere-template",
+        "password": "{{user `vsphere_password`}}",
+        "username": "{{user `vsphere_user`}}",
+        "host": "{{user `vsphere_server`}}",
+        "datacenter": "{{user `vsphere_datacenter`}}",
+        "folder": "{{user `vm_folder`}}",
+        "insecure": true
+      }
+    ]
+  ]
+  }
