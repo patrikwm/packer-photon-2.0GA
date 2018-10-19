@@ -47,6 +47,10 @@
     },
     {
       "type": "shell",
+      "script": "scripts/photon-package_update.sh"
+    },
+    {
+      "type": "shell",
       "script": "scripts/photon-vagrant-user_provisioning.sh"
     },
     {

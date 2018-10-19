@@ -70,6 +70,10 @@
     },
     {
       "type": "shell",
+      "script": "scripts/photon-package_update.sh"
+    },
+    {
+      "type": "shell",
       "only": ["vagrant-vmware_desktop", "vagrant-virtualbox"],
       "script": "scripts/photon-vagrant-user_provisioning.sh"
     },
