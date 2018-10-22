@@ -59,7 +59,7 @@ Create a variables.json file with correct variables. See variables.json_example 
 
 Make sure all the required software (listed above) is installed, then cd to the directory containing this README.md file, and run:
 
-    $ packer build -var-file=vars/iso-2.0GA.json packer-photon.json -var-file=variables.json vsphere_photon.json
+    $ packer build -var-file=vars/iso-2.0GA.json -var-file=variables.json vsphere_photon.json
 
 There are two build targets available:
 
